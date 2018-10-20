@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 // #define DEBUG
-#include "osdconfig.h"
+#include "/tmp/osdconfig.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
