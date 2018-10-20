@@ -1,5 +1,5 @@
 #pragma once
-#include "osdconfig.h"
+#include "/tmp/osdconfig.h"
 
 #ifdef FRSKY
 
