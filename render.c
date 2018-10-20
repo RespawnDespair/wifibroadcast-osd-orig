@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include "render.h"
 #include "telemetry.h"
-#include "osdconfig.h"
+#include "/tmp/osdconfig.h"
 
 int width, height;
 #define TO_FEET 3.28084
