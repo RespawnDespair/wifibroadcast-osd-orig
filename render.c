@@ -790,7 +790,7 @@ void draw_home_arrow(float abs_heading, float craft_heading, float pos_x, float 
     //abs_heading is the absolute direction/bearing the arrow should point eg bearing to home could be 45 deg
     //because arrow is drawn relative to the osd/camera view we need to offset by craft's heading
     #if HOME_ARROW_INVERT == true
-    abs_heading = 360 - abs_heading;
+    abs_heading = abs_heading - 180;
     #endif
     float rel_heading = abs_heading - craft_heading; //direction arrow needs to point relative to camera/osd/craft
     if (rel_heading < 0) rel_heading += 360;
