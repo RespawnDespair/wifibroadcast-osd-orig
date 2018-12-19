@@ -1341,6 +1341,53 @@ float course_to (float lat1, float long1, float lat2, float long2) {
 }
 
 
+// display totals mAh used, distance flown (km), airborne time (mins) - wowi
+void draw_TOTAL_AMPS(float current, float pos_x, float pos_y, float scale){
+
+	// get time passed since last rendering
+	long time_diff = current_ts() - amps_ts;
+	amps_ts = current_ts();
+	total_amps = total_amps + current*(float)time_diff/3600;
+
+	float text_scale = getWidth(2) * scale;
+	VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
+	sprintf(buffer, "%5.0f", total_amps);
+	TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+	Text(getWidth(pos_x), getHeight(pos_y), " mAh", myfont, text_scale*0.6);
+
+}
+void draw_TOTAL_DIST(int gpsspeed, float pos_x, float pos_y, float scale){
+
+	// get time passed since last rendering
+	long time_diff = current_ts() - dist_ts;
+	dist_ts = current_ts();
+	total_dist = total_dist + gpsspeed*(float)time_diff/3600000;
+
+	float text_scale = getWidth(2) * scale;
+	VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
+	sprintf(buffer, "%3.1f", total_dist);
+	TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+	Text(getWidth(pos_x), getHeight(pos_y), " km", myfont, text_scale*0.6);
+
+}
+void draw_TOTAL_TIME(int gpsspeed, float pos_x, float pos_y, float scale){
+
+	// get time passed since last rendering
+	long time_diff = current_ts() - time_ts;
+	time_ts = current_ts();
+	if(gpsspeed>0){
+		total_time = total_time + (float)time_diff/60000; // flying time in minutes
+	}
+
+	float text_scale = getWidth(2) * scale;
+	VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
+	sprintf(buffer, "%3.0f:%02d", total_time, (int)(total_time*60) % 60);
+	TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+	Text(getWidth(pos_x), getHeight(pos_y), " mins", myfont, text_scale*0.6);
+
+}
+
+
 
 void rotatePoints(float *x, float *y, float angle, int points, int center_x, int center_y){
     double cosAngle = cos(-angle * 0.017453292519);
