@@ -103,6 +103,8 @@ void render_init() {
 
     home_counter = 0;
 //  vgSeti(VG_MATRIX_MODE, VG_MATRIX_GLYPH_USER_TO_SURFACE);
+
+    amps_ts = dist_ts = time_ts = current_ts(); //wowi
 }
 
 
@@ -280,6 +282,17 @@ void render(telemetry_data_t *td, uint8_t cpuload_gnd, uint8_t temp_gnd, uint8_t
     draw_batt_status(td->voltage, td->ampere, BATT_STATUS_POS_X, BATT_STATUS_POS_Y, BATT_STATUS_SCALE * GLOBAL_SCALE);
 #endif
 
+#ifdef TOTAL_AMPS 
+  	draw_TOTAL_AMPS(td->ampere, TOTAL_AMPS_POS_X, TOTAL_AMPS_POS_Y, TOTAL_AMPS_SCALE * GLOBAL_SCALE);
+#endif
+
+#ifdef TOTAL_DIST
+ 	draw_TOTAL_DIST((int)td->speed, TOTAL_DIST_POS_X, TOTAL_DIST_POS_Y, TOTAL_DIST_SCALE * GLOBAL_SCALE);
+ #endif
+
+#ifdef TOTAL_TIME
+ 	draw_TOTAL_TIME((int)td->speed, TOTAL_TIME_POS_X, TOTAL_TIME_POS_Y, TOTAL_TIME_SCALE * GLOBAL_SCALE);
+#endif
 
 #ifdef POSITION
     #if defined(FRSKY)
@@ -899,7 +912,52 @@ void draw_batt_status(float voltage, float current, float pos_x, float pos_y, fl
     Text(getWidth(pos_x), getHeight(pos_y)+height_text, " V", myfont, text_scale*0.6);
 }
 
-
+// display totals mAh used, distance flown (km), airborne time (mins) - wowi
+void draw_TOTAL_AMPS(float current, float pos_x, float pos_y, float scale){
+ 
+  	// get time passed since last rendering
+ 	long time_diff = current_ts() - amps_ts;
+ 	amps_ts = current_ts();
+ 	total_amps = total_amps + current*(float)time_diff/3600;
+ 
+  
+  	float text_scale = getWidth(2) * scale;
+ 	VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
+ 	sprintf(buffer, "%5.0f", total_amps);
+ 	TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+ 	Text(getWidth(pos_x), getHeight(pos_y), " mAh", myfont, text_scale*0.6);
+ 
+}
+void draw_TOTAL_DIST(int gpsspeed, float pos_x, float pos_y, float scale){
+ 
+  	// get time passed since last rendering
+ 	long time_diff = current_ts() - dist_ts;
+ 	dist_ts = current_ts();
+ 	total_dist = total_dist + gpsspeed*(float)time_diff/3600000;
+ 
+  	float text_scale = getWidth(2) * scale;
+ 	VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
+ 	sprintf(buffer, "%3.1f", total_dist);
+ 	TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+ 	Text(getWidth(pos_x), getHeight(pos_y), " km", myfont, text_scale*0.6);
+ 
+}
+void draw_TOTAL_TIME(int gpsspeed, float pos_x, float pos_y, float scale){
+ 
+  	// get time passed since last rendering
+ 	long time_diff = current_ts() - time_ts;
+ 	time_ts = current_ts();
+ 	if(gpsspeed>0){
+ 		total_time = total_time + (float)time_diff/60000; // flying time in minutes
+ 	}
+ 
+  	float text_scale = getWidth(2) * scale;
+ 	VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
+ 	sprintf(buffer, "%3.0f:%02d", total_time, (int)(total_time*60) % 60);
+ 	TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
+ 	Text(getWidth(pos_x), getHeight(pos_y), " mins", myfont, text_scale*0.6);
+ 
+}
 
 void draw_position(float lat, float lon, float pos_x, float pos_y, float scale){
     float text_scale = getWidth(2) * scale;
@@ -1345,53 +1403,6 @@ float course_to (float lat1, float long1, float lat2, float long2) {
     a2 = atan2(a1, a2);
     if (a2 < 0.0) a2 += M_PI*2;
     return TO_DEG*(a2);
-}
-
-
-// display totals mAh used, distance flown (km), airborne time (mins) - wowi
-void draw_TOTAL_AMPS(float current, float pos_x, float pos_y, float scale){
-
-	// get time passed since last rendering
-	long time_diff = current_ts() - amps_ts;
-	amps_ts = current_ts();
-	total_amps = total_amps + current*(float)time_diff/3600;
-
-	float text_scale = getWidth(2) * scale;
-	VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
-	sprintf(buffer, "%5.0f", total_amps);
-	TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
-	Text(getWidth(pos_x), getHeight(pos_y), " mAh", myfont, text_scale*0.6);
-
-}
-void draw_TOTAL_DIST(int gpsspeed, float pos_x, float pos_y, float scale){
-
-	// get time passed since last rendering
-	long time_diff = current_ts() - dist_ts;
-	dist_ts = current_ts();
-	total_dist = total_dist + gpsspeed*(float)time_diff/3600000;
-
-	float text_scale = getWidth(2) * scale;
-	VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
-	sprintf(buffer, "%3.1f", total_dist);
-	TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
-	Text(getWidth(pos_x), getHeight(pos_y), " km", myfont, text_scale*0.6);
-
-}
-void draw_TOTAL_TIME(int gpsspeed, float pos_x, float pos_y, float scale){
-
-	// get time passed since last rendering
-	long time_diff = current_ts() - time_ts;
-	time_ts = current_ts();
-	if(gpsspeed>0){
-		total_time = total_time + (float)time_diff/60000; // flying time in minutes
-	}
-
-	float text_scale = getWidth(2) * scale;
-	VGfloat height_text = TextHeight(myfont, text_scale)+getHeight(0.3)*scale;
-	sprintf(buffer, "%3.0f:%02d", total_time, (int)(total_time*60) % 60);
-	TextEnd(getWidth(pos_x), getHeight(pos_y), buffer, myfont, text_scale);
-	Text(getWidth(pos_x), getHeight(pos_y), " mins", myfont, text_scale*0.6);
-
 }
 
 
