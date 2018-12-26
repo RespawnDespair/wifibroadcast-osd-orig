@@ -27,6 +27,13 @@
 #define CELL_WARNING_PCT1 (CELL_WARNING1-CELL_MIN)/(CELL_MAX-CELL_MIN)*100
 #define CELL_WARNING_PCT2 (CELL_WARNING2-CELL_MIN)/(CELL_MAX-CELL_MIN)*100
 
+long long amps_ts; 
+long long dist_ts; 
+long long time_ts;
+float total_amps; 
+float total_dist; 
+float total_time;
+
 int width, height;
 float scale_factor_font;
 bool setting_home;
