@@ -1160,7 +1160,11 @@ void draw_total_signal(int8_t signal, int goodblocks, int badblocks, int packets
 
     Text(getWidth(pos_x)+getWidth(0.4), getHeight(pos_y), "dBm", myfont, text_scale*0.6);
 
-    sprintf(buffer, "%d/%d", badblocks, packets_lost);
+    int percent_badblocks=(int)((double)badblocks/goodblocks*100);
+    int percent_packets_lost=(int)((double)packets_lost/packets_received*100);
+
+    sprintf(buffer, "%d(%d)/%d(%d)", badblocks, percent_badblocks, packets_lost, percent_packets_lost);
+	
     Text(getWidth(pos_x)-width_value-width_symbol, getHeight(pos_y)-height_text, buffer, myfont, text_scale*0.6);
 
     TextEnd(getWidth(pos_x)-width_value - getWidth(0.3) * scale, getHeight(pos_y), "", osdicons, text_scale * 0.7);
